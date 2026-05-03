@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин самых вкусных куличей</title>
+    <script src="https://telegram.org/js/telegram-web-app.js?62"></script>
+    <link href="style.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<button id="cart_btn" onclick="openHide()">Корзина 🛒</button>
+<div id="cart">
+    <h2>Ваш заказ</h2>
+    <ul id="cart_list"></ul>
+    <button onclick="clearCart()">Очистить корзину</button>
+    <button onclick="send()">Оформить заказ</button>
+</div>
+<div class="products">
+    <div class="card" data-name="Кулич классический" data-price="100">
+        <img src="https://cookhelp.ru/upload/recipes/pashalynyy_kulich.jpg" alt="Кулич классический">
+        <h3>Кулич классический</h3>
+        <p>100 ₱</p>
+        <button class="add_btn" onclick="addToCart(this)">Добавить в корзину</button>
+    </div>
+    <div class="card" data-name="Кулич дубайский" data-price="1000000000">
+        <img src="https://images.gastronom.ru/kg6RcY2MnKl9CWlLbv1lDs3uNc55HQFjFiUDEGZwgAs/pr:recipe-cover-image/g:ce/rs:auto:0:0:0/L2Ntcy9hbGwtaW1hZ2VzL2I0OTM1MGIyLTViOTYtNDZkNy1hMjM2LTYzMzgxZTAxMGU1MS5qcGc.webp" alt="Кулич дубайский">
+        <h3>Кулич дубайский</h3>
+        <p>1000000000 ₱</p>
+        <button class="add_btn" onclick="addToCart(this)">Добавить в корзину</button>
+    </div>
+    <div class="card" data-name="Кулич шоколадный" data-price="250">
+        <img src="https://dobryanka-rus.ru/storage/goods/199262_W5kzF.jpg" alt="Кулич шоколадный">
+        <h3>Кулич шоколадный</h3>
+        <p>250 ₱</p>
+        <button class="add_btn" onclick="addToCart(this)">Добавить в корзину</button>
+    </div>
+    <div class="card" data-name="Кулич с попкорном" data-price="350">
+        <img src="https://imgproxy.kuper.ru/imgproxy/size-500-500/czM6Ly9zYi1vYnMtcHJvZC1jb250ZW50LWltYWdlczAxL3Byb2R1Y3RzLzQ2MTM2Mzg0L29yaWdpbmFsLzUvMjAyNS0wNC0xNyUyMDA5JTNBNTUlM0ExNi41NTY4ODIlMkIwMCUzQTAwLzQ2MTM2Mzg0XzUuanBn.jpg" alt="Кулич с попкорном">
+        <h3>Кулич с попкорном</h3>
+        <p>350 ₱</p>
+        <button class="add_btn" onclick="addToCart(this)">Добавить в корзину</button>
+    </div>
+</div>
+<script>
+    const cart = [];
+    let total = 0;
+    const cartDiv = document.getElementById("cart");
+    const cartUl = document.getElementById("cart_list");
+
+    function clearCart() {
+        cart.length = 0;
+        total = 0;
+        renderCart();
+    }
+
+    function openHide() {
+        cartDiv.style.display = cartDiv.style.display === "block" ? "none" : "block";
+    }
+
+    function addToCart(btn) {
+        const kartochka = btn.closest(".card");
+        const name = kartochka.getAttribute("data-name");
+        const price = parseFloat(kartochka.getAttribute("data-price"));
+        cart.push({ name, price });
+        total += price;
+        renderCart();
+    }
+
+    function renderCart() {
+        cartUl.innerHTML = "";
+        // Общий итог уже считается в total, просто отрисовываем список
+        cart.forEach(item => {
+            const li = document.createElement("li");
+            li.textContent = `${item.name} – ${item.price} ₱`;
+            cartUl.appendChild(li);
+        });
+        const totalLi = document.createElement("li");
+        totalLi.textContent = `Итоговая стоимость: ${total} ₱`;
+        cartUl.appendChild(totalLi);
+    }
+
+    function send() {
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        let text = cart.map(item => `${item.name} ${item.price}`).join("\n");
+        text += `\nИтоговая стоимость: ${total}`;
+        tg.sendData(text);
+        clearCart();
+    }
+</script>
+</body>
+</html>
